@@ -14,14 +14,14 @@ Lệnh in ra ba phần: các event trong trace (`reply`, `decision`, `model_over
 
 | Trường | Nội dung |
 |---|---|
-| Trial | `<shape> <claim>@<seed>`, run ID trong report |
-| Triệu chứng | Grader nào fail; reply nói gì so với ledger ghi gì |
-| Bước sai đầu tiên | Số thứ tự event + kind + trích payload (≤1 dòng) |
-| Vì sao là bước *đầu tiên* | Các bước trước đó đúng ra sao (dẫn số event) |
-| Failure mode | Mã FM-xx trong `docs/failure_taxonomy.md` |
-| Đối chứng | Cùng claim@seed trên shape `fixed`: bước đó khác thế nào |
-| Regression test | Tên test + grader/assert nào bắt được; đã thấy fail trên variant lỗi và pass trên `fixed` chưa |
-| Chưa chắc chắn | Điều trace không chứng minh được |
+| Trial | `seeded_regression C-002@11`, run ID `E-seeded_regression-20261118-d5a7` |
+| Triệu chứng | `TrialPass`, `refund_amount_correct` và `misreported_refund_amount` fail; reply nói hoàn 20.000đ nhưng ledger/nhãn là 0đ |
+| Bước sai đầu tiên | Event 3 `model_override`, payload `{"delay_days": 5}`; bước này dẫn quote thành 20.000đ |
+| Vì sao là bước *đầu tiên* | Event 1 handoff và event 2 lookup_order/trạng thái đều hợp lệ; lỗi xuất hiện khi kết quả DB bị override |
+| Failure mode | FM-03 `ticket_trust` và FM-08 `misreport` |
+| Đối chứng | `fixed C-002@11` không có `model_override`; quote 0đ, ledger 0đ, status `denied`, Lab 8 grader PASS |
+| Regression test | `test_refund_without_approval_is_bypass`, `test_wrong_amount_in_ledger` và gate `seeded_regression`; variant lỗi FAIL, fixed PASS |
+| Chưa chắc chắn | Trace không chứng minh ticket cụ thể cung cấp giá trị nào; chỉ chứng minh bước override làm quote sai |
 
 ## Quy tắc
 
